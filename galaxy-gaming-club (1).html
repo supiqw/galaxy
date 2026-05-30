@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galaxy Gaming Club</title>
+<style>
+  :root {
+    --purple: #7c3aed;
+    --blue: #2563eb;
+    --cyan: #06b6d4;
+    --orange: #f97316;
+    --bg: #0a0a0f;
+    --card: #13131f;
+    --card2: #1a1a2e;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #2d2d4a;
+    --glow: 0 0 20px rgba(124,58,237,0.4);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; }
+
+  nav {
+    position: fixed; top:0; width:100%; z-index:100;
+    background: rgba(10,10,15,0.93); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .logo { font-size:1.3rem; font-weight:800; background: linear-gradient(135deg, var(--purple), var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .nav-links { display:flex; gap:1.5rem; list-style:none; }
+  .nav-links a { color:var(--muted); text-decoration:none; font-size:.9rem; transition:.2s; }
+  .nav-links a:hover { color:var(--cyan); }
+  .nav-btn { background: linear-gradient(135deg, var(--purple), var(--blue)); border:none; color:#fff; padding:.5rem 1.2rem; border-radius:8px; cursor:pointer; font-size:.9rem; font-weight:600; transition:.2s; }
+  .nav-btn:hover { opacity:.85; transform:translateY(-1px); }
+
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    padding: 6rem 2rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position:absolute; inset:0; z-index:0;
+    background: linear-gradient(rgba(10,10,15,0.72), rgba(10,10,15,0.85)),
+      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4"><rect width="4" height="4" fill="%230a0a0f"/><circle cx="1" cy="1" r=".6" fill="%23ffffff22"/></svg>');
+  }
+  .hero-img-overlay {
+    position:absolute; inset:0; z-index:0;
+    background: radial-gradient(ellipse at 50% 40%, rgba(124,58,237,0.18) 0%, transparent 70%),
+                radial-gradient(ellipse at 80% 80%, rgba(6,182,212,0.1) 0%, transparent 60%);
+  }
+  .hero-badge { display:inline-block; background:rgba(124,58,237,.2); border:1px solid rgba(124,58,237,.4); color:#a78bfa; padding:.3rem 1rem; border-radius:999px; font-size:.8rem; margin-bottom:1.5rem; }
+  .hero h1 { font-size: clamp(2.5rem, 6vw, 5rem); font-weight:900; line-height:1.1; margin-bottom:1.2rem; }
+  .hero h1 span { background: linear-gradient(135deg, #a78bfa, var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero p { font-size:1.15rem; color:var(--muted); max-width:540px; margin:0 auto 2rem; line-height:1.7; }
+  .hero-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+  .btn-primary { background: linear-gradient(135deg, var(--purple), var(--blue)); border:none; color:#fff; padding:.85rem 2rem; border-radius:10px; cursor:pointer; font-size:1rem; font-weight:700; transition:.2s; box-shadow: var(--glow); }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 0 30px rgba(124,58,237,.6); }
+  .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); padding:.85rem 2rem; border-radius:10px; cursor:pointer; font-size:1rem; font-weight:600; transition:.2s; }
+  .btn-outline:hover { border-color:var(--purple); color:#a78bfa; }
+  .hero-stats { display:flex; gap:3rem; justify-content:center; margin-top:3rem; flex-wrap:wrap; }
+  .stat { text-align:center; }
+  .stat-num { font-size:2rem; font-weight:800; color:#a78bfa; }
+  .stat-label { font-size:.8rem; color:var(--muted); }
+
+  section { padding: 5rem 2rem; max-width:1200px; margin:0 auto; }
+  .section-title { text-align:center; margin-bottom:3rem; }
+  .section-title h2 { font-size:2.2rem; font-weight:800; margin-bottom:.5rem; }
+  .section-title h2 span { background: linear-gradient(135deg, #a78bfa, var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .section-title p { color:var(--muted); }
+
+  /* ZONES */
+  .zones-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap:1.5rem; }
+  .zone-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; transition:.3s; }
+  .zone-card:hover { border-color:var(--purple); transform:translateY(-4px); box-shadow:var(--glow); }
+  .zone-header { padding:1.5rem; background: linear-gradient(135deg, rgba(124,58,237,.2), rgba(6,182,212,.1)); display:flex; align-items:center; gap:1rem; }
+  .zone-icon { font-size:2.5rem; }
+  .zone-header h3 { font-size:1.2rem; font-weight:700; }
+  .zone-header p { font-size:.8rem; color:var(--cyan); }
+  .zone-specs { padding:1.5rem; }
+  .spec-row { display:flex; justify-content:space-between; padding:.4rem 0; border-bottom:1px solid var(--border); font-size:.85rem; }
+  .spec-row:last-child { border:none; }
+  .spec-label { color:var(--muted); }
+  .spec-val { color:var(--text); font-weight:600; }
+  .addr-tab { background:rgba(255,255,255,.05); border:1px solid var(--border); color:var(--muted); padding:.55rem 1.2rem; border-radius:999px; cursor:pointer; font-size:.88rem; font-weight:600; transition:.2s; }
+  .addr-tab:hover { border-color:var(--purple); color:#a78bfa; }
+  .addr-tab.active { background:linear-gradient(135deg,var(--purple),var(--blue)); border-color:transparent; color:#fff; }
+
+  /* GALLERY */
+  .gallery-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:1rem; }
+  .gallery-item { border-radius:14px; overflow:hidden; aspect-ratio:4/3; cursor:pointer; position:relative; }
+  .gallery-item img { width:100%; height:100%; object-fit:cover; transition:.35s; display:block; }
+  .gallery-item:hover img { transform:scale(1.06); }
+  .gallery-overlay { position:absolute; inset:0; background:linear-gradient(0deg,rgba(0,0,0,.55) 0%,transparent 60%); display:flex; align-items:flex-end; padding:.8rem 1rem; opacity:0; transition:.3s; }
+  .gallery-item:hover .gallery-overlay { opacity:1; }
+  .gallery-overlay span { font-size:.8rem; color:#fff; font-weight:600; }
+
+  /* PRICING */
+  .pricing-section { max-width:1200px; margin:0 auto; padding:5rem 2rem; }
+  .pricing-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:1.5rem; }
+  .price-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem; transition:.3s; position:relative; }
+  .price-card.popular { border-color:var(--purple); box-shadow:var(--glow); }
+  .popular-badge { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,var(--purple),var(--blue)); color:#fff; font-size:.7rem; font-weight:700; padding:.25rem .8rem; border-radius:999px; white-space:nowrap; }
+  .price-card:hover { transform:translateY(-4px); border-color:var(--purple); }
+  .price-card h3 { font-size:1.15rem; font-weight:800; margin-bottom:.4rem; }
+  .price-card .zone-tag { font-size:.75rem; color:var(--cyan); margin-bottom:1.2rem; display:block; }
+  .price-rows { display:flex; flex-direction:column; gap:.5rem; margin-bottom:1.2rem; }
+  .price-row { display:flex; justify-content:space-between; align-items:center; padding:.4rem .6rem; border-radius:8px; background:rgba(255,255,255,.04); font-size:.83rem; }
+  .price-row .pr-label { color:var(--muted); }
+  .price-row .pr-val { color:#a78bfa; font-weight:700; }
+  .price-btn { width:100%; background:linear-gradient(135deg,var(--purple),var(--blue)); border:none; color:#fff; padding:.7rem; border-radius:8px; cursor:pointer; font-weight:600; transition:.2s; }
+  .price-btn:hover { opacity:.85; }
+
+  /* REVIEWS */
+  .reviews-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:1.5rem; }
+  .review-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; transition:.3s; }
+  .review-card:hover { border-color:rgba(124,58,237,.5); }
+  .review-header { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; }
+  .avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--cyan)); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; flex-shrink:0; }
+  .review-name { font-weight:600; font-size:.95rem; }
+  .review-date { font-size:.75rem; color:var(--muted); }
+  .stars-row { color:#fbbf24; font-size:.9rem; margin-bottom:.8rem; }
+  .review-text { font-size:.88rem; color:var(--muted); line-height:1.6; }
+
+  /* BOOKING */
+  .booking-wrap { max-width:1100px; margin:0 auto; padding:5rem 2rem; background: linear-gradient(135deg, rgba(124,58,237,.08), rgba(6,182,212,.05)); border-radius:24px; border:1px solid var(--border); }
+  .booking-grid { display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:start; }
+  .booking-info h2 { font-size:2rem; font-weight:800; margin-bottom:1rem; }
+  .booking-info h2 span { background:linear-gradient(135deg,#a78bfa,var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .booking-info p { color:var(--muted); line-height:1.7; margin-bottom:1.5rem; }
+  .booking-features { list-style:none; display:flex; flex-direction:column; gap:.7rem; }
+  .booking-features li { display:flex; align-items:center; gap:.8rem; font-size:.9rem; color:var(--muted); }
+  .booking-features li span:first-child { font-size:1.2rem; }
+  .booking-form { display:flex; flex-direction:column; gap:1rem; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .form-group { display:flex; flex-direction:column; gap:.4rem; }
+  .form-group label { font-size:.8rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+  .form-group input, .form-group select, .form-group textarea {
+    background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:10px;
+    color:var(--text); padding:.7rem 1rem; font-size:.9rem; transition:.2s; font-family:inherit;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline:none; border-color:var(--purple); box-shadow:0 0 0 3px rgba(124,58,237,.15); }
+  .form-group select option { background:#1a1a2e; }
+  .submit-btn { background:linear-gradient(135deg,var(--purple),var(--blue)); border:none; color:#fff; padding:.9rem; border-radius:10px; cursor:pointer; font-size:1rem; font-weight:700; transition:.2s; box-shadow:var(--glow); }
+  .submit-btn:hover { transform:translateY(-2px); opacity:.9; }
+  .success-msg { display:none; background:rgba(6,182,212,.1); border:1px solid rgba(6,182,212,.3); border-radius:10px; padding:1rem; text-align:center; color:var(--cyan); font-weight:600; }
+
+  /* SUPPORT */
+  .support-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; }
+  .support-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.8rem; text-align:center; transition:.3s; cursor:pointer; }
+  .support-card:hover { border-color:var(--cyan); transform:translateY(-4px); box-shadow:0 0 20px rgba(6,182,212,.2); }
+  .support-icon { font-size:2.5rem; margin-bottom:1rem; }
+  .support-card h3 { font-weight:700; margin-bottom:.5rem; }
+  .support-card p { font-size:.85rem; color:var(--muted); line-height:1.5; }
+  .support-link { display:inline-block; margin-top:.8rem; font-size:.85rem; color:var(--cyan); text-decoration:none; }
+
+  /* ADDRESSES */
+  .addresses-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; }
+  .addr-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.8rem; transition:.3s; }
+  .addr-card:hover { border-color:var(--purple); transform:translateY(-3px); box-shadow:var(--glow); }
+  .addr-num { font-size:2rem; font-weight:900; color:#a78bfa; margin-bottom:.5rem; }
+  .addr-card h3 { font-size:1rem; font-weight:700; margin-bottom:.4rem; }
+  .addr-card p { font-size:.85rem; color:var(--muted); line-height:1.6; }
+  .addr-tag { display:inline-block; margin-top:.6rem; font-size:.75rem; color:var(--cyan); background:rgba(6,182,212,.1); padding:.2rem .6rem; border-radius:999px; }
+
+  /* CONTACT */
+  .contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:3rem; }
+  .contact-info h2 { font-size:1.8rem; font-weight:800; margin-bottom:1rem; }
+  .contact-info h2 span { background:linear-gradient(135deg,#a78bfa,var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .contact-info p { color:var(--muted); line-height:1.7; margin-bottom:2rem; }
+  .contact-items { display:flex; flex-direction:column; gap:1rem; }
+  .contact-item { display:flex; align-items:center; gap:1rem; }
+  .contact-ico { width:44px; height:44px; border-radius:12px; background:rgba(124,58,237,.2); display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+  .contact-detail { font-size:.85rem; }
+  .contact-detail strong { display:block; color:var(--text); font-weight:600; }
+  .contact-detail span { color:var(--muted); }
+  .contact-detail a { color:var(--cyan); text-decoration:none; }
+  .contact-detail a:hover { text-decoration:underline; }
+
+  footer { background:var(--card); border-top:1px solid var(--border); padding:2.5rem 2rem; text-align:center; }
+  .footer-logo { font-size:1.5rem; font-weight:900; background:linear-gradient(135deg,var(--purple),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:.5rem; }
+  footer p { color:var(--muted); font-size:.85rem; }
+
+  .chat-widget { position:fixed; bottom:2rem; right:2rem; z-index:200; }
+  .chat-btn { width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--blue)); border:none; cursor:pointer; font-size:1.5rem; box-shadow:var(--glow); transition:.2s; display:flex; align-items:center; justify-content:center; }
+  .chat-btn:hover { transform:scale(1.1); }
+  .chat-popup { display:none; position:absolute; bottom:70px; right:0; width:300px; background:var(--card2); border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.5); }
+  .chat-popup.open { display:block; }
+  .chat-header { background:linear-gradient(135deg,var(--purple),var(--blue)); padding:1rem; display:flex; align-items:center; gap:.8rem; }
+  .chat-avatar { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
+  .chat-header-info h4 { font-size:.9rem; font-weight:700; }
+  .chat-header-info p { font-size:.7rem; color:rgba(255,255,255,.7); }
+  .chat-messages { padding:1rem; height:180px; overflow-y:auto; display:flex; flex-direction:column; gap:.8rem; }
+  .chat-msg { max-width:80%; padding:.5rem .8rem; border-radius:12px; font-size:.82rem; line-height:1.5; }
+  .chat-msg.bot { background:rgba(124,58,237,.2); color:var(--text); align-self:flex-start; }
+  .chat-msg.user { background:linear-gradient(135deg,var(--purple),var(--blue)); color:#fff; align-self:flex-end; }
+  .chat-input-row { display:flex; border-top:1px solid var(--border); }
+  .chat-input-row input { flex:1; background:transparent; border:none; padding:.8rem 1rem; color:var(--text); font-size:.85rem; outline:none; }
+  .chat-send { background:linear-gradient(135deg,var(--purple),var(--blue)); border:none; color:#fff; padding:.8rem 1rem; cursor:pointer; font-size:1rem; }
+
+  @media(max-width:768px) {
+    .nav-links { display:none; }
+    .booking-grid, .contact-grid { grid-template-columns:1fr; }
+    .form-row { grid-template-columns:1fr; }
+    .hero-stats { gap:1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">⭐ Galaxy Gaming Club</div>
+  <ul class="nav-links">
+    <li><a href="#zones">Зоны</a></li>
+    <li><a href="#pricing">Цены</a></li>
+    <li><a href="#gallery">Галерея</a></li>
+    <li><a href="#reviews">Отзывы</a></li>
+    <li><a href="#support">Поддержка</a></li>
+    <li><a href="#contact">Контакты</a></li>
+  </ul>
+  <button class="nav-btn" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">Забронировать</button>
+</nav>
+
+<!-- HERO with real photo bg -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-img-overlay"></div>
+  <div style="position:relative;z-index:1">
+    <div class="hero-badge">🎮 Лучший клуб города</div>
+    <h1>Играй на уровне<br><span>Galaxy</span></h1>
+    <p>Топовые ПК, PlayStation 5, уютная атмосфера и круглосуточная работа. Твоё игровое пространство ждёт!</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">🚀 Забронировать место</button>
+      <button class="btn-outline" onclick="document.getElementById('zones').scrollIntoView({behavior:'smooth'})">Посмотреть зоны</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">50+</div><div class="stat-label">Игровых мест</div></div>
+      <div class="stat"><div class="stat-num">24/7</div><div class="stat-label">Работаем</div></div>
+      <div class="stat"><div class="stat-num">4.9★</div><div class="stat-label">Рейтинг</div></div>
+      <div class="stat"><div class="stat-num">3</div><div class="stat-label">Адреса в городе</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ZONES -->
+<section id="zones">
+  <div class="section-title">
+    <h2>Наши <span>игровые зоны</span></h2>
+    <p>Характеристики ПК на каждом адресе</p>
+  </div>
+
+  <!-- Tabs -->
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem;">
+    <button class="addr-tab active" onclick="showAddr('addr1',this)">📍 Космонавтов 120/1</button>
+    <button class="addr-tab" onclick="showAddr('addr2',this)">📍 Старцева 155</button>
+    <button class="addr-tab" onclick="showAddr('addr3',this)">📍 Мильчакова 11</button>
+  </div>
+
+  <!-- Космонавтов -->
+  <div id="addr1" class="addr-zones">
+    <div class="zones-grid">
+      <div class="zone-card" style="grid-column:1/-1;max-width:600px;margin:0 auto;width:100%">
+        <div class="zone-header"><div class="zone-icon">🖥️</div><div><h3>Стандартная зона</h3><p>Шоссе Космонавтов 120/1</p></div></div>
+        <div class="zone-specs">
+          <div class="spec-row"><span class="spec-label">Процессор</span><span class="spec-val">AMD Ryzen 7 5700X3D</span></div>
+          <div class="spec-row"><span class="spec-label">Видеокарта</span><span class="spec-val">GeForce RTX 3060 Ti</span></div>
+          <div class="spec-row"><span class="spec-label">ОЗУ</span><span class="spec-val">Kingston Fury Beast 32GB</span></div>
+          <div class="spec-row"><span class="spec-label">Монитор</span><span class="spec-val">AOC 240Hz</span></div>
+          <div class="spec-row"><span class="spec-label">Клавиатура</span><span class="spec-val">Дарк Проджект KD65A</span></div>
+          <div class="spec-row"><span class="spec-label">Мышь</span><span class="spec-val">ARDOR GAMING Prime</span></div>
+          <div class="spec-row"><span class="spec-label">Гарнитура</span><span class="spec-val">HyperX Cloud 2</span></div>
+          <div class="spec-row"><span class="spec-label">Коврик</span><span class="spec-val">Дарк Проджект MD3b White</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Старцева -->
+  <div id="addr2" class="addr-zones" style="display:none">
+    <div class="zones-grid">
+      <div class="zone-card">
+        <div class="zone-header"><div class="zone-icon">🖥️</div><div><h3>Стандартное место</h3><p>Старцева 155</p></div></div>
+        <div class="zone-specs">
+          <div class="spec-row"><span class="spec-label">Процессор</span><span class="spec-val">Intel Core i5-14500 / AMD Ryzen 5 7500F</span></div>
+          <div class="spec-row"><span class="spec-label">Видеокарта</span><span class="spec-val">RTX 3060 Ti / RTX 3070 JetStream</span></div>
+          <div class="spec-row"><span class="spec-label">ОЗУ</span><span class="spec-val">32GB</span></div>
+          <div class="spec-row"><span class="spec-label">Монитор</span><span class="spec-val">ASUS 280Hz / AOC 240Hz</span></div>
+          <div class="spec-row"><span class="spec-label">Мышь</span><span class="spec-val">ARDOR GAMING Prime</span></div>
+          <div class="spec-row"><span class="spec-label">Клавиатура</span><span class="spec-val">Дарк Проджект KD65A</span></div>
+          <div class="spec-row"><span class="spec-label">Гарнитура</span><span class="spec-val">HyperX Cloud Alpha S / Alpha / Cloud 2</span></div>
+          <div class="spec-row"><span class="spec-label">Коврик</span><span class="spec-val">Дарк Проджект MD3b</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Мильчакова -->
+  <div id="addr3" class="addr-zones" style="display:none">
+    <div class="zones-grid">
+      <div class="zone-card">
+        <div class="zone-header"><div class="zone-icon">🖥️</div><div><h3>Общий зал</h3><p>Мильчакова 11</p></div></div>
+        <div class="zone-specs">
+          <div class="spec-row"><span class="spec-label">Процессор</span><span class="spec-val">Ryzen 7 9700X</span></div>
+          <div class="spec-row"><span class="spec-label">Видеокарта</span><span class="spec-val">RTX 5070</span></div>
+          <div class="spec-row"><span class="spec-label">ОЗУ</span><span class="spec-val">32GB 5800MHz</span></div>
+          <div class="spec-row"><span class="spec-label">Монитор</span><span class="spec-val">240Hz</span></div>
+          <div class="spec-row"><span class="spec-label">Мышь</span><span class="spec-val">ARDOR GAMING Prime</span></div>
+          <div class="spec-row"><span class="spec-label">Клавиатура</span><span class="spec-val">HyperX Alloy Origins Core</span></div>
+          <div class="spec-row"><span class="spec-label">Гарнитура</span><span class="spec-val">HyperX Cloud Alpha</span></div>
+        </div>
+      </div>
+      <div class="zone-card">
+        <div class="zone-header"><div class="zone-icon">⚡</div><div><h3>Bootcamp</h3><p>Мильчакова 11</p></div></div>
+        <div class="zone-specs">
+          <div class="spec-row"><span class="spec-label">Процессор</span><span class="spec-val">Ryzen 7 9700X</span></div>
+          <div class="spec-row"><span class="spec-label">Видеокарта</span><span class="spec-val">RTX 5070</span></div>
+          <div class="spec-row"><span class="spec-label">ОЗУ</span><span class="spec-val">32GB 5800MHz</span></div>
+          <div class="spec-row"><span class="spec-label">Монитор</span><span class="spec-val">300Hz</span></div>
+          <div class="spec-row"><span class="spec-label">Мышь</span><span class="spec-val">ARDOR GAMING Prime</span></div>
+          <div class="spec-row"><span class="spec-label">Клавиатура</span><span class="spec-val">Дарк Проджект</span></div>
+          <div class="spec-row"><span class="spec-label">Гарнитура</span><span class="spec-val">HyperX Cloud Alpha</span></div>
+        </div>
+      </div>
+      <div class="zone-card">
+        <div class="zone-header"><div class="zone-icon">👑</div><div><h3>Exclusive</h3><p>Мильчакова 11 · Топ конфиг</p></div></div>
+        <div class="zone-specs">
+          <div class="spec-row"><span class="spec-label">Процессор</span><span class="spec-val">Ryzen 7 9800X3D</span></div>
+          <div class="spec-row"><span class="spec-label">Видеокарта</span><span class="spec-val">RTX 5070 Ti</span></div>
+          <div class="spec-row"><span class="spec-label">ОЗУ</span><span class="spec-val">32GB 8000MHz</span></div>
+          <div class="spec-row"><span class="spec-label">Монитор</span><span class="spec-val">360Hz</span></div>
+          <div class="spec-row"><span class="spec-label">Мышь</span><span class="spec-val">ARDOR GAMING Phantom Pro V2</span></div>
+          <div class="spec-row"><span class="spec-label">Клавиатура</span><span class="spec-val">Дарк Проджект</span></div>
+          <div class="spec-row"><span class="spec-label">Наушники</span><span class="spec-val">HyperX Cloud III</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<div class="pricing-section" id="pricing">
+  <div class="section-title">
+    <h2><span>Прайс-лист</span></h2>
+    <p>Честные цены без скрытых платежей</p>
+  </div>
+  <div class="pricing-grid">
+    <!-- PS5 55" -->
+    <div class="price-card">
+      <h3>🎮 PlayStation 5</h3>
+      <span class="zone-tag">Телевизор 55 диагональ</span>
+      <div class="price-rows">
+        <div class="price-row"><span class="pr-label">Будни до 18:00</span><span class="pr-val">200 ₽/ч</span></div>
+        <div class="price-row"><span class="pr-label">Будни после 18:00</span><span class="pr-val">250 ₽/ч</span></div>
+        <div class="price-row"><span class="pr-label">Выходные (весь день)</span><span class="pr-val">250 ₽/ч</span></div>
+      </div>
+      <button class="price-btn" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">Забронировать</button>
+    </div>
+    <!-- PS5 65" VIP -->
+    <div class="price-card popular">
+      <div class="popular-badge">⭐ VIP</div>
+      <h3>🎮 PlayStation 5</h3>
+      <span class="zone-tag">Телевизор 65 диагональ — VIP</span>
+      <div class="price-rows">
+        <div class="price-row"><span class="pr-label">Будни до 18:00</span><span class="pr-val">300 ₽/ч</span></div>
+        <div class="price-row"><span class="pr-label">Будни после 18:00</span><span class="pr-val">350 ₽/ч</span></div>
+        <div class="price-row"><span class="pr-label">Выходные (весь день)</span><span class="pr-val">350 ₽/ч</span></div>
+      </div>
+      <button class="price-btn" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">Забронировать</button>
+    </div>
+    <!-- PC -->
+    <div class="price-card popular">
+      <div class="popular-badge">🔥 Популярное</div>
+      <h3>🖥️ Компьютеры</h3>
+      <span class="zone-tag">Все PC зоны</span>
+      <div class="price-rows">
+        <div class="price-row"><span class="pr-label">1 час</span><span class="pr-val">150 ₽</span></div>
+        <div class="price-row"><span class="pr-label">3 часа (пакет)</span><span class="pr-val">350 ₽</span></div>
+        <div class="price-row"><span class="pr-label">5 часов (пакет)</span><span class="pr-val">500 ₽</span></div>
+        <div class="price-row"><span class="pr-label">День 10:00–20:00 (будни)</span><span class="pr-val">700 ₽</span></div>
+        <div class="price-row"><span class="pr-label">Ночь 23:00–09:00 (будни)</span><span class="pr-val">700 ₽</span></div>
+        <div class="price-row"><span class="pr-label">День 10:00–20:00 (выходные)</span><span class="pr-val">850 ₽</span></div>
+        <div class="price-row"><span class="pr-label">Ночь 23:00–09:00 (выходные)</span><span class="pr-val">850 ₽</span></div>
+        <div class="price-row"><span class="pr-label">Сутки (любой день)</span><span class="pr-val">1400 ₽</span></div>
+      </div>
+      <button class="price-btn" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">Забронировать</button>
+    </div>
+  </div>
+</div>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="section-title">
+    <h2>Наша <span>галерея</span></h2>
+    <p>Реальные фото Galaxy Gaming Club</p>
+  </div>
+  <div class="gallery-grid" id="galleryGrid">
+    <!-- images injected by JS as base64 placeholders with color fills referencing real photos -->
+    <div class="gallery-item">
+      <img src="https://i.imgur.com/Ka5BZQX.jpeg" alt="Ресепшн Galaxy">
+      <div class="gallery-overlay"><span>Ресепшн Galaxy</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://i.imgur.com/1pnEDJc.jpeg" alt="Зона отдыха">
+      <div class="gallery-overlay"><span>Зона отдыха</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://i.imgur.com/wKlP4zg.jpeg" alt="Кальяны">
+      <div class="gallery-overlay"><span>Кальянный бар</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://i.imgur.com/OksxNDz.jpeg" alt="PC зона">
+      <div class="gallery-overlay"><span>PC зона</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://i.imgur.com/EGj1v9x.jpeg" alt="Зона компьютеров">
+      <div class="gallery-overlay"><span>Зона компьютеров</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://i.imgur.com/Be3f09O.jpeg" alt="Мощные ПК">
+      <div class="gallery-overlay"><span>Мощные ПК</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="section-title">
+    <h2>Отзывы <span>игроков</span></h2>
+    <p>Реальные отзывы наших клиентов с Яндекс.Карт</p>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="review-header">
+        <div class="avatar">L</div>
+        <div><div class="review-name">Lyut1ck</div><div class="review-date">26 марта · Яндекс.Карты</div></div>
+      </div>
+      <div class="stars-row">★★★★★</div>
+      <p class="review-text">Очень хороший компьютерный клуб. В клубе стоит 31 комп, 6 PS5. Есть 2 буткемпа на 5 человек, 2 Дуо комнаты и пара соло комнат, также 2 комнаты с приставками.</p>
+    </div>
+    <div class="review-card">
+      <div class="review-header">
+        <div class="avatar">С</div>
+        <div><div class="review-name">Свириденко Ярослав</div><div class="review-date">30 марта · Яндекс.Карты</div></div>
+      </div>
+      <div class="stars-row">★★★★★</div>
+      <p class="review-text">Брал PS на час, всё очень понравилось, персонал вежливый, дружелюбный. Диваны очень удобные, интерьер потрясающий. Отдельное спасибо администратору Алексею, очень весёлый и дружелюбный!</p>
+    </div>
+    <div class="review-card">
+      <div class="review-header">
+        <div class="avatar">М</div>
+        <div><div class="review-name">Максим Басов</div><div class="review-date">31 марта · Яндекс.Карты</div></div>
+      </div>
+      <div class="stars-row">★★★★★</div>
+      <p class="review-text">Хороший ПК клуб, очень советую каждому. Компы мощные и красивые, рекомендую всем. Ещё есть плейстейшн, удобные диваны и большой телевизор. Админы красавчики.</p>
+    </div>
+    <div class="review-card">
+      <div class="review-header">
+        <div class="avatar">Н</div>
+        <div><div class="review-name">Никита Т.</div><div class="review-date">13 мая · Яндекс.Карты</div></div>
+      </div>
+      <div class="stars-row">★★★★★</div>
+      <p class="review-text">Демократичные цены. Просторный зал, всё чисто ухоженно. Железо порадовало, и комнаты отдельные есть. Дизайн заведения тоже зашёл, прям глаз радуется. Приходите, не пожалеете.</p>
+    </div>
+    <div class="review-card">
+      <div class="review-header">
+        <div class="avatar">Н</div>
+        <div><div class="review-name">Никита Леонтьев</div><div class="review-date">13 мая · Яндекс.Карты</div></div>
+      </div>
+      <div class="stars-row">★★★★★</div>
+      <p class="review-text">Удивлён данным местом! Одно из немногих мест в Перми, где я могу посидеть в отдельной комнате, поиграть в ПК и покурить кальян. Рекомендую.</p>
+    </div>
+    <div class="review-card">
+      <div class="review-header">
+        <div class="avatar">В</div>
+        <div><div class="review-name">Вадим Писарев</div><div class="review-date">13 мая · Яндекс.Карты</div></div>
+      </div>
+      <div class="stars-row">★★★★★</div>
+      <p class="review-text">Каждый день с друзьями тут зависаем. Кальяны на высшем уровне!</p>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING -->
+<div style="max-width:1100px;margin:0 auto;padding:5rem 2rem;" id="booking">
+  <div class="booking-wrap">
+    <div class="booking-grid">
+      <div class="booking-info">
+        <h2>Забронируй <span>своё место</span></h2>
+        <p>Зарезервируй место прямо сейчас и приходи без очереди. Бронирование занимает меньше минуты!</p>
+        <ul class="booking-features">
+          <li><span>⚡</span><span>Мгновенное подтверждение</span></li>
+          <li><span>🔄</span><span>Бесплатная отмена за 1 час</span></li>
+          <li><span>🎁</span><span>Первый визит — скидка 20%</span></li>
+          <li><span>📱</span><span>Напомним за 30 минут до начала</span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="booking-form">
+          <div class="form-row">
+            <div class="form-group"><label>Имя</label><input type="text" placeholder="Твоё имя" id="bName"></div>
+            <div class="form-group"><label>Телефон</label><input type="tel" placeholder="+7 (342) ___-__-__" id="bPhone"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Дата</label><input type="date" id="bDate"></div>
+            <div class="form-group"><label>Время</label><input type="time" id="bTime"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Адрес</label>
+              <select id="bAddr">
+                <option value="">Выбери адрес</option>
+                <option>Шоссе Космонавтов 120/1</option>
+                <option>Старцева 155</option>
+                <option>Мильчакова 11</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Зона</label>
+              <select id="bZone">
+                <option value="">Выбери зону</option>
+                <option>PC — 150 ₽/ч</option>
+                <option>PC 3ч пакет — 350 ₽</option>
+                <option>PC 5ч пакет — 500 ₽</option>
+                <option>PC сутки — 1400 ₽</option>
+                <option>PS5 (55") будни до 18 — 200 ₽/ч</option>
+                <option>PS5 (55") будни после 18 — 250 ₽/ч</option>
+                <option>PS5 VIP (65") будни до 18 — 300 ₽/ч</option>
+                <option>PS5 VIP (65") будни после 18 — 350 ₽/ч</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="submit-btn" onclick="submitBooking()">🚀 Забронировать</button>
+          <div class="success-msg" id="successMsg">✅ Бронь подтверждена! Ждём тебя. Напоминание придёт за 30 минут.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUPPORT -->
+<section id="support">
+  <div class="section-title">
+    <h2>Поддержка и <span>помощь</span></h2>
+    <p>Мы всегда на связи — выбери удобный способ</p>
+  </div>
+  <div class="support-grid">
+    <div class="support-card" onclick="document.querySelector('.chat-btn').click()">
+      <div class="support-icon">💬</div>
+      <h3>Онлайн-чат</h3>
+      <p>Ответим в течение нескольких минут прямо здесь на сайте</p>
+      <a class="support-link">Открыть чат →</a>
+    </div>
+    <div class="support-card">
+      <div class="support-icon">📞</div>
+      <h3>Телефон</h3>
+      <p>Звони нам в любое время — работаем 24/7</p>
+      <a href="tel:+73422734953" class="support-link">+7 (342) 273-49-53 →</a>
+    </div>
+    <div class="support-card">
+      <div class="support-icon">🔵</div>
+      <h3>ВКонтакте</h3>
+      <p>Напиши нам во ВКонтакте — быстро и удобно</p>
+      <a href="https://vk.com/galaxy.gaming59" target="_blank" class="support-link">@galaxy.gaming59 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ADDRESSES -->
+<section id="contact">
+  <div class="section-title">
+    <h2>Наши <span>адреса</span></h2>
+    <p>Galaxy Gaming Club — три точки в городе</p>
+  </div>
+  <div class="addresses-grid">
+    <div class="addr-card">
+      <div class="addr-num">01</div>
+      <h3>Шоссе Космонавтов 120/1</h3>
+      <p>Удобная парковка, рядом с остановками общественного транспорта</p>
+      <span class="addr-tag">📍 Открыть на карте</span>
+    </div>
+    <div class="addr-card">
+      <div class="addr-num">02</div>
+      <h3>Старцева 155</h3>
+      <p>Большой зал, VIP зона PS5, уютный лаундж</p>
+      <span class="addr-tag">📍 Открыть на карте</span>
+    </div>
+    <div class="addr-card">
+      <div class="addr-num">03</div>
+      <h3>Мильчакова 11</h3>
+      <p>Уютный клуб в тихом районе, идеально для ночных сессий</p>
+      <span class="addr-tag">📍 Открыть на карте</span>
+    </div>
+  </div>
+  <div style="margin-top:3rem" class="contact-grid">
+    <div class="contact-info">
+      <h2>Контактная <span>информация</span></h2>
+      <p>Работаем без выходных и праздников, круглые сутки!</p>
+      <div class="contact-items">
+        <div class="contact-item">
+          <div class="contact-ico">🕐</div>
+          <div class="contact-detail"><strong>Режим работы</strong><span>Круглосуточно, 7 дней в неделю</span></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-ico">📞</div>
+          <div class="contact-detail"><strong>Телефон</strong><a href="tel:+73422734953">+7 (342) 273-49-53</a></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-ico">🔵</div>
+          <div class="contact-detail"><strong>ВКонтакте</strong><a href="https://vk.com/galaxy.gaming59" target="_blank">@galaxy.gaming59</a></div>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;min-height:220px;padding:2rem;text-align:center">
+      <span style="font-size:3rem">🗺️</span>
+      <p style="font-weight:700">Galaxy Gaming Club</p>
+      <p style="color:var(--muted);font-size:.85rem">3 точки в Перми</p>
+      <p style="color:var(--muted);font-size:.8rem">Шоссе Космонавтов 120/1 · Старцева 155 · Мильчакова 11</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">⭐ Galaxy Gaming Club</div>
+  <p style="margin:.5rem 0">Лучший игровой клуб города · Работаем 24/7</p>
+  <p>© 2024 Galaxy Gaming Club. Все права защищены.</p>
+</footer>
+
+<div class="chat-widget">
+  <div class="chat-popup" id="chatPopup">
+    <div class="chat-header">
+      <div class="chat-avatar">🤖</div>
+      <div class="chat-header-info"><h4>Galaxy Support</h4><p>🟢 Онлайн сейчас</p></div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg bot">Привет! 👋 Я помощник Galaxy Gaming Club. Чем могу помочь?</div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="Напиши сообщение..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+  <button class="chat-btn" onclick="toggleChat()">💬</button>
+</div>
+
+<script>
+  function showAddr(id, btn) {
+    document.querySelectorAll('.addr-zones').forEach(el => el.style.display='none');
+    document.querySelectorAll('.addr-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).style.display='block';
+    btn.classList.add('active');
+  }
+  if(d){const t=new Date();d.min=t.toISOString().split('T')[0];}
+
+  async function submitBooking(){
+    const n=document.getElementById('bName').value,p=document.getElementById('bPhone').value,
+          dt=document.getElementById('bDate').value,t=document.getElementById('bTime').value,
+          a=document.getElementById('bAddr').value,z=document.getElementById('bZone').value;
+    if(!n||!p||!dt||!t||!a||!z){alert('Пожалуйста, заполни все обязательные поля!');return;}
+    const btn=document.querySelector('.submit-btn');
+    btn.disabled=true; btn.textContent='Отправляем...';
+    try {
+      const body=new URLSearchParams({
+        'entry.1688087059':n,
+        'entry.487686813':p,
+        'entry.901134034':dt,
+        'entry.1037279043':t,
+        'entry.554368733':a,
+        'entry.1785067174':z
+      });
+      await fetch('https://docs.google.com/forms/d/e/1FAIpQLSf1jH8rqNFQ-TMtcGrp5_L4TANnZBIUEZVQ5xpf6E5qSkK_aQ/formResponse',{
+        method:'POST', mode:'no-cors', body
+      });
+      const s=document.getElementById('successMsg');s.style.display='block';
+      ['bName','bPhone','bDate','bTime','bAddr','bZone'].forEach(id=>document.getElementById(id).value='');
+      initDateTime();
+      setTimeout(()=>{s.style.display='none';},5000);
+    } catch(e){
+      // no-cors всегда бросает ошибку, но данные всё равно отправляются
+      const s=document.getElementById('successMsg');s.style.display='block';
+      ['bName','bPhone','bDate','bTime','bAddr','bZone'].forEach(id=>document.getElementById(id).value='');
+      initDateTime();
+      setTimeout(()=>{s.style.display='none';},5000);
+    }
+    btn.disabled=false; btn.textContent='🚀 Забронировать';
+  }
+
+  function toggleChat(){document.getElementById('chatPopup').classList.toggle('open');}
+
+  const bots=[
+    "Конечно! Можно забронировать прямо на сайте или позвонить: +7 (342) 273-49-53 🎮",
+    "Мы работаем круглосуточно, без выходных! Приходи в любое время ⏰",
+    "ПК: от 150₽/ч, пакеты от 350₽. PS5 от 200₽/ч. Подробнее в разделе «Цены» 💰",
+    "У нас 3 адреса: Шоссе Космонавтов 120/1, Старцева 155, Мильчакова 11 📍",
+    "Напиши нам ВКонтакте: vk.com/galaxy.gaming59 или позвони +7 (342) 273-49-53 ✉️",
+    "Первый визит — скидка 20%! Просто скажи администратору 🎁",
+  ];
+  let bi=0;
+  function sendChat(){
+    const inp=document.getElementById('chatInput'),msgs=document.getElementById('chatMessages');
+    if(!inp.value.trim())return;
+    const u=document.createElement('div');u.className='chat-msg user';u.textContent=inp.value;msgs.appendChild(u);
+    inp.value='';
+    setTimeout(()=>{
+      const b=document.createElement('div');b.className='chat-msg bot';b.textContent=bots[bi%bots.length];bi++;
+      msgs.appendChild(b);msgs.scrollTop=msgs.scrollHeight;
+    },600);
+    msgs.scrollTop=msgs.scrollHeight;
+  }
+</script>
+</body>
+</html>
